@@ -1,0 +1,59 @@
+html,
+body {
+  margin: 0;
+  height: 100%; /* can also use viewport units (height: 100vh) */
+  overflow: hidden;
+}
+
+/* * {
+   outline: 1px solid red !important;
+} */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-color: #ffffff; /* content and footer */
+  --bg-color-dark: #000000;
+  --text-color: #000000;
+  --text-color-dark: #ffffff;
+
+  --schema-orange: #ff4500;
+  --schema-orange-darker: #c63600;
+  --schema-yellow: #ff9000;
+  --schema-blue: #0a64a4;
+  --schema-blue-light: #508fbb;
+  --schema-green: #00b060;
+  --schema-green-darker: #00894b;
+
+  --bg-header: var(--schema-orange);
+  /* line-height: 1.5; */
+  /* font-weight: 400; */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  --transitiontime: 0.4s; /* 400 ms is teh default value for fly in / out in svelte */
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+/* dark mode */
+body.dark {
+  --bg-color: var(--bg-color-dark);
+  --text-color: #ffffff;
+  --bg-header: var(--schema-orange-darker);
+}

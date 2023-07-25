@@ -1,0 +1,41 @@
+<a href="/">
+  <svg
+    class="new"
+    viewBox="0 0 100 100"
+    stroke-width="5"
+    stroke="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="2.5" y="2.5" width="40" height="40" rx="2" ry="2" fill="none" />
+    <rect x="57.5" y="2.5" width="40" height="40" rx="2" ry="2" fill="none" />
+    <rect x="2.5" y="57.5" width="40" height="40" rx="2" ry="2" fill="none" />
+
+    <rect x="18.5" y="18.5" width="8" height="8" rx="2" ry="2" />
+    <rect x="73.5" y="18.5" width="8" height="8" rx="2" ry="2" />
+    <rect x="18.5" y="73.5" width="8" height="8" rx="2" ry="2" />
+
+    <path
+      d="M73.5,97.5 L97.5,97.5 L97.5,73.5"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</a>
+
+<style>
+  svg {
+    height: 2.5rem;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    margin: 0.2rem 1rem 0.2rem 0rem;
+  }
+
+  a,
+  a:hover,
+  a:visited {
+    color: var(--text-color);
+    display: block;
+    text-decoration: none;
+  }
+</style>

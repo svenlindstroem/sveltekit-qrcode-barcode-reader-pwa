@@ -1,0 +1,36 @@
+<script lang="ts">
+  import { clickOutside } from './click_outside'
+  import { appstate } from '$lib/store'
+  import { fly } from 'svelte/transition'
+
+  let open: string = ''
+
+  $: open = $appstate.isOpenMenu ? 'open' : ''
+</script>
+
+<content
+  in:fly={{ y: 200 }}
+  out:fly={{ y: 200 }}
+  class:open
+  use:clickOutside
+  on:outclick={() => (open = '')}
+>
+  <a href="/about">About</a>
+  <a href="/history">History</a>
+  <a href="/codes">Supported Codes</a>
+</content>
+
+<style>
+  content {
+    position: absolute;
+    bottom: 3.5rem;
+    padding: 1rem;
+    background-color: var(--schema-blue-light);
+    height: calc(100% - 9.2rem);
+  }
+
+  a {
+    display: block;
+    text-decoration: none;
+  }
+</style>
