@@ -1,7 +1,7 @@
 <script lang="ts">
   import { navigating } from '$app/stores'
   import { appstate } from '$lib/store'
-  import Logo from '$lib/Logo.svelte'
+  import Header from '$lib/Header.svelte'
   import Menu from '$lib/Menu.svelte'
   import BtnDarkMode from '$lib/BtnDarkMode.svelte'
   import BtnBurger from '$lib/BtnBurger.svelte'
@@ -19,8 +19,7 @@
 
 <div class="app">
   <header>
-    <Logo />
-    <div>Code Scanner</div>
+    <Header />
   </header>
   <main>
     <slot />
@@ -50,7 +49,6 @@
   main {
     padding: 0.5rem 1rem;
   }
-
   header {
     margin: 0;
     display: flex;
@@ -63,13 +61,6 @@
 	*/
     background-color: var(--schema-orange);
     overflow: hidden;
-    & div {
-      font-size: 2rem;
-      overflow: hidden;
-      white-space: nowrap;
-      /* 		-webkit-text-fill-color: transparent;
-  		-webkit-text-stroke: 2px; */
-    }
   }
 
   main {

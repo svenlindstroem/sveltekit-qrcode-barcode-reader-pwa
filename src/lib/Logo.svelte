@@ -28,7 +28,7 @@
     height: 2.5rem;
     width: 2.5rem;
     min-width: 2.5rem;
-    margin: 0.2rem 1rem 0.2rem 0rem;
+    margin: 0.2rem 1rem 0rem 0rem;
   }
 
   a,
