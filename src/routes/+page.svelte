@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-  <title>Home</title>
+  <title>Code Scanner</title>
   <meta name="description" content="QRcode and Barcode Scanner" />
 </svelte:head>
 <content> scan </content>
