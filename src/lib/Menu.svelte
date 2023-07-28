@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { clickOutside } from './click_outside'
+  import { clickOutside } from './clickOutside'
   import { appstate } from '$lib/store'
   import { fly } from 'svelte/transition'
 
@@ -13,7 +13,7 @@
   out:fly={{ y: 200 }}
   class:open
   use:clickOutside
-  on:outclick={() => (open = '')}
+  on:clickedOutside={() => appstate.set({ ...$appstate, isOpenMenu: false })}
 >
   <a href="/">Scan</a>
   <a href="/about">About</a>
