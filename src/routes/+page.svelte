@@ -5,7 +5,7 @@
 
   import { appstate } from '$lib/store'
   type DecodedResult = {
-    text: string | void
+    text: string | null | undefined
     format: string | void
   }
 
@@ -17,6 +17,7 @@
   let playBeep: boolean = true
   let torchSupport: boolean = false
   let trackCapabilities: any
+  let resultIsLink: boolean = false
 
   // listen to state changes
   $: if ($appstate.isScanning) {
@@ -71,6 +72,10 @@
         )
       }
 
+      if (result.text.includes('http://') || result.text.includes('https://')) {
+        resultIsLink = true
+      }
+
       if (playBeep) beep()
       codeReader.stopContinuousDecode()
       codeReader.reset()
@@ -104,7 +109,11 @@
   <section>
     {#if decoded}
       <div>Result:</div>
-      <pre><code>{decoded.text} {decoded.format}</code></pre>
+      {#if resultIsLink}
+        <pre><code><a href={decoded.text}>{decoded.text}</a> {decoded.format}</code></pre>
+      {:else}
+        <pre><code>{decoded.text} {decoded.format}</code></pre>
+      {/if}
     {/if}
     {#if errorMsg}
       <pre><code>{errorMsg}</code></pre>
