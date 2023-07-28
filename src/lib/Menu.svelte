@@ -15,6 +15,7 @@
   use:clickOutside
   on:outclick={() => (open = '')}
 >
+  <a href="/">Scan</a>
   <a href="/about">About</a>
   <a href="/history">History</a>
   <a href="/codes">Supported Codes</a>
@@ -30,6 +31,14 @@
   }
 
   a {
+    display: block;
+    text-decoration: none;
+  }
+
+  a,
+  a:hover,
+  a:visited {
+    color: var(--text-color);
     display: block;
     text-decoration: none;
   }
