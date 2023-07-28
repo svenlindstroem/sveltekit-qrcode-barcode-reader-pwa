@@ -6,13 +6,13 @@
   $: open = $appstate.isOpenMenu ? 'open' : ''
 
   function toggle() {
-    appstate.set({ ...$appstate, isOpenMenu: $appstate.isOpenMenu ? false : true })
+    appstate.set({ ...$appstate, isOpenMenu: !$appstate.isOpenMenu })
   }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class:open on:click={toggle} aria-label="menu">
+<div class="ignore-clickoutside" class:open on:click={toggle} aria-label="menu">
   <span />
   <span />
   <span />
