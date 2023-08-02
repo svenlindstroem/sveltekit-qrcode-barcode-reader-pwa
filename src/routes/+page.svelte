@@ -38,6 +38,7 @@
       if (devices.length > 1) {
         selectedDeviceId = devices.find((device) => device.label.toLowerCase().includes('back'))
       }
+      if (!selectedDeviceId) selectedDeviceId = undefined
       // hasMultipleCameras = true
       if (devices.length === 1) {
         selectedDeviceId = devices[0].deviceId
@@ -107,6 +108,7 @@
 </svelte:head>
 <content>
   <section>
+    {selectedDeviceId}
     {#if $isScanningDerived}
       <!-- svelte-ignore a11y-media-has-caption -->
       <video bind:this={videoElement} />
