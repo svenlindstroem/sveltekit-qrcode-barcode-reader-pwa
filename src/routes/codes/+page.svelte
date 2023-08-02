@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import * as ZXing from '@zxing/library'
   let codes = ZXing.BarcodeFormat
 

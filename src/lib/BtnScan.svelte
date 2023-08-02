@@ -1,10 +1,27 @@
 <script lang="ts">
   import { appstate } from '$lib/store'
+  import { page } from '$app/stores'
+  import { goto, beforeNavigate } from '$app/navigation'
+  import type { NavigationType } from '@sveltejs/kit'
 
   let start: string = ''
   $: start = $appstate.isScanning ? 'start' : ''
+  let nav: NavigationType
+
+  // when moving away from the scan page, stop scanning
+  beforeNavigate((nav) => {
+    if (nav.from?.route.id === '/' && nav.to?.route.id !== '/' && nav.to?.route.id !== undefined) {
+      if ($appstate.isScanning) {
+        appstate.set({ ...$appstate, isScanning: false })
+      }
+    }
+  })
 
   function toggle() {
+    // goto scan page when button is pressed
+    if ($page.route.id !== '/') {
+      goto('/')
+    }
     appstate.set({ ...$appstate, isScanning: $appstate.isScanning ? false : true })
   }
 </script>

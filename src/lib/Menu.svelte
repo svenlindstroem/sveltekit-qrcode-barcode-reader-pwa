@@ -1,7 +1,7 @@
 <script lang="ts">
   import { clickOutside } from './clickOutside'
   import { appstate } from '$lib/store'
-  import { fly } from 'svelte/transition'
+  import { fade, fly } from 'svelte/transition'
 
   let open: string = ''
 
@@ -9,8 +9,8 @@
 </script>
 
 <content
-  in:fly={{ y: 200 }}
-  out:fly={{ y: 200 }}
+  in:fade
+  out:fade
   class:open
   use:clickOutside
   on:clickedOutside={() => appstate.set({ ...$appstate, isOpenMenu: false })}

@@ -1,39 +1,44 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { fade } from 'svelte/transition'
+  import { fly } from 'svelte/transition'
   import * as ZXing from '@zxing/library'
+  import { appstate, isScanningDerived } from '$lib/store'
+  import ScanResult from '$lib/ScanResult.svelte'
 
-  import { appstate } from '$lib/store'
-  type DecodedResult = {
+  type ScanResult = {
     text: string | null | undefined
     format: string | void
+    datetime: Date
   }
 
   let videoElement: HTMLVideoElement
   let devices: MediaDeviceInfo[] = []
-  let selectedDeviceId: string
-  let decoded: DecodedResult | false = false
+  let selectedDeviceId: MediaDeviceInfo | string | undefined
+  let scanResult: ScanResult | false = false
   let errorMsg: string | unknown
   let playBeep: boolean = true
-  let torchSupport: boolean = false
-  let trackCapabilities: any
+  let hasMultipleCameras = false
   let resultIsLink: boolean = false
 
+  const codeReader = new ZXing.BrowserMultiFormatReader()
+
   // listen to state changes
-  $: if ($appstate.isScanning) {
-    start()
+  // use a derived store to only listen to changes to isScanning
+  $: if ($isScanningDerived) {
+    initializeCodeReader().then(() => start())
   } else {
     stop()
   }
 
-  const codeReader = new ZXing.BrowserMultiFormatReader()
-
-  onMount(async () => {
-    //console.log(import.meta.env.DEV)
+  async function initializeCodeReader() {
     try {
       // requires ssl if not on localhost
       devices = await codeReader.listVideoInputDevices()
-      console.log('ZXing code reader initialized', devices)
+
+      if (devices.length > 1) {
+        selectedDeviceId = devices.find((device) => device.label.toLowerCase().includes('back'))
+      }
+      // hasMultipleCameras = true
       if (devices.length === 1) {
         selectedDeviceId = devices[0].deviceId
       }
@@ -41,46 +46,46 @@
       errorMsg = error
       console.log(error)
     }
-  })
+  }
+
+  // onMount(async () => {})
 
   async function start() {
-    await codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, decodedCallback)
+    scanResult = false
+    await codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, scanResultCallback)
 
     // get the active track and trun on torch
-    navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
-      videoElement.srcObject = mediaStream
+    /* navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
+      //videoElement.srcObject = mediaStream
       const track = mediaStream.getVideoTracks()[0]
-      trackCapabilities = track.getCapabilities()
-      console.log(trackCapabilities)
-    })
+      //trackCapabilities = track.getCapabilities()
+      console.log(track.getCapabilities(), 12345)
+    }) */
   }
 
   function stop() {
-    //codeReader.stopContinuousDecode()
     codeReader.reset()
-    console.log('Reset.')
     errorMsg = ''
     appstate.set({ ...$appstate, isScanning: false })
   }
 
-  function decodedCallback(result, error) {
+  function scanResultCallback(result: ScanResult, error: any) {
     if (result) {
-      decoded = {
+      scanResult = {
         text: result.text,
         format: Object.keys(ZXing.BarcodeFormat).find(
           (key) => ZXing.BarcodeFormat[key] === result.format
-        )
+        ),
+        datetime: new Date()
       }
 
-      if (result.text.includes('http://') || result.text.includes('https://')) {
+      if (result.text?.includes('http://') || result.text?.includes('https://')) {
         resultIsLink = true
       }
 
-      if (playBeep) beep()
-      codeReader.stopContinuousDecode()
-      codeReader.reset()
+      if (playBeep) beep() // play sound
+      codeReader.reset() // stop video
       appstate.set({ ...$appstate, isScanning: false })
-      //stopVideoOnly()
     }
     if (error && !(error instanceof ZXing.NotFoundException)) {
       console.error(error)
@@ -101,24 +106,22 @@
   <meta name="description" content="QRcode and Barcode Scanner" />
 </svelte:head>
 <content>
-  <section class={!$appstate.isScanning ? 'hidden' : ''}>
-    <!-- svelte-ignore a11y-media-has-caption -->
-    <video bind:this={videoElement} />
-  </section>
-
   <section>
-    {#if decoded}
-      <div>Result:</div>
+    {#if $isScanningDerived}
+      <!-- svelte-ignore a11y-media-has-caption -->
+      <video bind:this={videoElement} />
+    {/if}
+    {#if scanResult}
+      <ScanResult {scanResult} />
       {#if resultIsLink}
-        <pre><code><a href={decoded.text}>{decoded.text}</a> {decoded.format}</code></pre>
+        <pre><code><a href={scanResult.text}>{scanResult.text}</a> {scanResult.format}</code></pre>
       {:else}
-        <pre><code>{decoded.text} {decoded.format}</code></pre>
+        <pre><code>{scanResult.text} {scanResult.format}</code></pre>
       {/if}
     {/if}
     {#if errorMsg}
       <pre><code>{errorMsg}</code></pre>
     {/if}
-    {JSON.stringify(trackCapabilities)}
   </section>
 </content>
 
@@ -136,9 +139,13 @@
 	*/
   }
   section {
-    width: 100%;
+    justify-content: center;
+    align-items: center;
   }
   video {
-    height: calc(100vh - 10rem);
+    /* outline: 1px solid green; */
+    /* display: none; */
+    /* height: 100%;
+    width: 100%; */
   }
 </style>
