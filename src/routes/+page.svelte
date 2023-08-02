@@ -2,8 +2,9 @@
   import { onMount } from 'svelte'
   import { fly } from 'svelte/transition'
   import * as ZXing from '@zxing/library'
-  import { appstate, isScanningDerived } from '$lib/store'
+  import { appstate, isScanningDerived, selectedDeviceIdDerived } from '$lib/store'
   import ScanResult from '$lib/ScanResult.svelte'
+  import SelectCamera from '$lib/SelectCamera.svelte'
 
   type ScanResult = {
     text: string | null | undefined
@@ -20,6 +21,8 @@
   let hasMultipleCameras = false
   let resultIsLink: boolean = false
 
+  let cameras: InputDeviceInfo[]
+
   const codeReader = new ZXing.BrowserMultiFormatReader()
 
   // listen to state changes
@@ -28,6 +31,11 @@
     initializeCodeReader().then(() => start())
   } else {
     stop()
+  }
+
+  $: if ($selectedDeviceIdDerived) {
+    stop()
+    initializeCodeReader().then(() => start())
   }
 
   async function initializeCodeReader() {
@@ -49,11 +57,19 @@
     }
   }
 
-  // onMount(async () => {})
+  /*   onMount(async () => {
+    navigator.mediaDevices.enumerateDevices().then(function (devices) {
+      cameras = devices.filter((device) => device.kind === 'videoinput')
+    })
+  }) */
 
   async function start() {
     scanResult = false
-    await codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, scanResultCallback)
+    await codeReader.decodeFromVideoDevice(
+      $selectedDeviceIdDerived,
+      videoElement,
+      scanResultCallback
+    )
 
     // get the active track and trun on torch
     /* navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
@@ -108,7 +124,7 @@
 </svelte:head>
 <content>
   <section>
-    {selectedDeviceId}
+    <SelectCamera />
     {#if $isScanningDerived}
       <!-- svelte-ignore a11y-media-has-caption -->
       <video bind:this={videoElement} />
