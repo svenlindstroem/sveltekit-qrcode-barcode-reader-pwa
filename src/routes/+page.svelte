@@ -5,20 +5,15 @@
   import { appstate, isScanningDerived, selectedDeviceIdDerived } from '$lib/store'
   import ScanResult from '$lib/ScanResult.svelte'
   import SelectCamera from '$lib/SelectCamera.svelte'
-
-  type ScanResult = {
-    text: string | null | undefined
-    format: string | void
-    datetime: Date
-  }
+  import type { ScanResultType } from '../types'
 
   let videoElement: HTMLVideoElement
   let devices: MediaDeviceInfo[] = []
   let selectedDeviceId: MediaDeviceInfo | string | undefined
-  let scanResult: ScanResult | false = false
+  let scanResult: ScanResultType | false = false
   let errorMsg: string | unknown
   let playBeep: boolean = true
-  let hasMultipleCameras = false
+
   let resultIsLink: boolean = false
 
   let cameras: InputDeviceInfo[]
@@ -86,17 +81,17 @@
     appstate.set({ ...$appstate, isScanning: false })
   }
 
-  function scanResultCallback(result: ScanResult, error: any) {
+  const scanResultCallback: ZXing.DecodeContinuouslyCallback = (result, error) => {
     if (result) {
+      const text = result.getText()
       scanResult = {
-        text: result.text,
-        format: Object.keys(ZXing.BarcodeFormat).find(
-          (key) => ZXing.BarcodeFormat[key] === result.format
-        ),
+        text,
+        format: ZXing.BarcodeFormat[result.getBarcodeFormat()],
+        //format: BarcodeFormat. result.getBarcodeFormat(),
         datetime: new Date()
       }
 
-      if (result.text?.includes('http://') || result.text?.includes('https://')) {
+      if (text.includes('http://') || text.includes('https://')) {
         resultIsLink = true
       }
 
@@ -161,7 +156,7 @@
     align-items: center;
   }
   video {
-    /* outline: 1px solid green; */
+    outline: 1px solid green;
     /* display: none; */
     /* height: 100%;
     width: 100%; */
