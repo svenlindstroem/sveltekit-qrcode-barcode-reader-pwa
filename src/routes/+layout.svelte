@@ -1,19 +1,28 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { navigating } from '$app/stores'
   import { appstate } from '$lib/store'
+  import { checkPermissions } from '$lib/checkCameraPermissions'
   import Header from '$lib/Header.svelte'
   import Menu from '$lib/Menu.svelte'
   import BtnDarkMode from '$lib/BtnDarkMode.svelte'
   import BtnBurger from '$lib/BtnBurger.svelte'
   import BtnScan from '$lib/BtnScan.svelte'
+  import Spinner from '$lib/Spinner.svelte'
   import './styles.css'
 
+  let cameras: MediaDeviceInfo[]
+  let showPromptNotice: boolean = false
   $: if ($navigating) closeMenu()
 
+  onMount(async () => {
+    checkPermissions()
+    // wait to seconds, then show accept prompt notice
+    setTimeout(() => (showPromptNotice = true), 2000)
+  })
+
   function closeMenu() {
-    const newState = { ...$appstate }
-    newState.isOpenMenu = $appstate.isOpenMenu = false
-    appstate.set(newState)
+    appstate.set({ ...$appstate, isOpenMenu: false })
   }
 </script>
 
@@ -22,7 +31,15 @@
     <Header />
   </header>
   <main>
-    <slot />
+    {#if $appstate.waitForCameraPermission}
+      <p>Checking camera permissions ...</p>
+      {#if showPromptNotice}
+        <p>Are you prompted to allow acces to the camera?</p>
+      {/if}
+      <Spinner />
+    {:else}
+      <slot />
+    {/if}
   </main>
   {#if $appstate.isOpenMenu}
     <Menu />

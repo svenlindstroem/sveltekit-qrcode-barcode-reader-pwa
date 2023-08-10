@@ -1,78 +1,47 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { fly } from 'svelte/transition'
   import * as ZXing from '@zxing/library'
+  import type { ScanResultType } from '../types'
   import { appstate, isScanningDerived, selectedDeviceIdDerived } from '$lib/store'
   import ScanResult from '$lib/ScanResult.svelte'
   import SelectCamera from '$lib/SelectCamera.svelte'
-  import type { ScanResultType } from '../types'
+  import { tick } from 'svelte'
+  import { checkPermissions } from '$lib/checkCameraPermissions'
 
   let videoElement: HTMLVideoElement
-  let devices: MediaDeviceInfo[] = []
-  let selectedDeviceId: MediaDeviceInfo | string | undefined
   let scanResult: ScanResultType | false = false
   let errorMsg: string | unknown
   let playBeep: boolean = true
 
   let resultIsLink: boolean = false
 
-  let cameras: InputDeviceInfo[]
-
   const codeReader = new ZXing.BrowserMultiFormatReader()
 
   // listen to state changes
   // use a derived store to only listen to changes to isScanning
   $: if ($isScanningDerived) {
-    initializeCodeReader().then(() => start())
+    start()
   } else {
     stop()
   }
 
   $: if ($selectedDeviceIdDerived) {
     stop()
-    initializeCodeReader().then(() => start())
   }
-
-  async function initializeCodeReader() {
-    try {
-      // requires ssl if not on localhost
-      devices = await codeReader.listVideoInputDevices()
-
-      if (devices.length > 1) {
-        selectedDeviceId = devices.find((device) => device.label.toLowerCase().includes('back'))
-      }
-      if (!selectedDeviceId) selectedDeviceId = undefined
-      // hasMultipleCameras = true
-      if (devices.length === 1) {
-        selectedDeviceId = devices[0].deviceId
-      }
-    } catch (error) {
-      errorMsg = error
-      console.log(error)
-    }
-  }
-
-  /*   onMount(async () => {
-    navigator.mediaDevices.enumerateDevices().then(function (devices) {
-      cameras = devices.filter((device) => device.kind === 'videoinput')
-    })
-  }) */
 
   async function start() {
     scanResult = false
-    await codeReader.decodeFromVideoDevice(
-      $selectedDeviceIdDerived,
-      videoElement,
-      scanResultCallback
-    )
+    await tick() // tick needed to wait for videoElement
 
-    // get the active track and trun on torch
-    /* navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
-      //videoElement.srcObject = mediaStream
-      const track = mediaStream.getVideoTracks()[0]
-      //trackCapabilities = track.getCapabilities()
-      console.log(track.getCapabilities(), 12345)
-    }) */
+    try {
+      await codeReader.decodeFromVideoDevice(
+        $selectedDeviceIdDerived,
+        videoElement,
+        scanResultCallback
+      )
+    } catch (error) {
+      console.log(error)
+      stop()
+    }
   }
 
   function stop() {
@@ -87,7 +56,6 @@
       scanResult = {
         text,
         format: ZXing.BarcodeFormat[result.getBarcodeFormat()],
-        //format: BarcodeFormat. result.getBarcodeFormat(),
         datetime: new Date()
       }
 
@@ -118,24 +86,39 @@
   <meta name="description" content="QRcode and Barcode Scanner" />
 </svelte:head>
 <content>
-  <section>
-    <SelectCamera />
-    {#if $isScanningDerived}
-      <!-- svelte-ignore a11y-media-has-caption -->
-      <video bind:this={videoElement} />
-    {/if}
-    {#if scanResult}
-      <ScanResult {scanResult} />
-      {#if resultIsLink}
-        <pre><code><a href={scanResult.text}>{scanResult.text}</a> {scanResult.format}</code></pre>
-      {:else}
-        <pre><code>{scanResult.text} {scanResult.format}</code></pre>
+  {#if $appstate.cameraPermission === 'prompt'}
+    <p>Please allow access to to the camera.</p>
+  {:else if $appstate.cameraPermission === 'denied'}
+    <p>
+      Permission to use your camera has been denied. You will need to reset site permission in your
+      browser settings.
+    </p>
+    <p>
+      <!-- svelte-ignore a11y-invalid-attribute -->
+      Click to check camera permissions again:
+      <a href="#" on:click={() => checkPermissions()}>check</a>
+    </p>
+  {:else}
+    <section>
+      {#if $isScanningDerived}
+        <!-- svelte-ignore a11y-media-has-caption -->
+        <video bind:this={videoElement} />
       {/if}
-    {/if}
-    {#if errorMsg}
-      <pre><code>{errorMsg}</code></pre>
-    {/if}
-  </section>
+      <SelectCamera />
+      {#if scanResult}
+        <ScanResult {scanResult} />
+        {#if resultIsLink}
+          <pre><code><a href={scanResult.text}>{scanResult.text}</a> {scanResult.format}</code
+            ></pre>
+        {:else}
+          <pre><code>{scanResult.text} {scanResult.format}</code></pre>
+        {/if}
+      {/if}
+      {#if errorMsg}
+        <pre><code>{errorMsg}</code></pre>
+      {/if}
+    </section>
+  {/if}
 </content>
 
 <style>
@@ -146,19 +129,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* 	
-	justify-content: center;
-	align-items: center; 
-	*/
   }
   section {
     justify-content: center;
     align-items: center;
   }
   video {
-    outline: 1px solid green;
-    /* display: none; */
-    /* height: 100%;
-    width: 100%; */
+    outline: 1px solid var(--schema-green);
   }
 </style>

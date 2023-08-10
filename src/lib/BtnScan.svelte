@@ -22,16 +22,18 @@
     if ($page.route.id !== '/') {
       goto('/')
     }
-    appstate.set({ ...$appstate, isScanning: $appstate.isScanning ? false : true })
+    appstate.set({ ...$appstate, isScanning: !$appstate.isScanning })
   }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-interactive-supports-focus -->
-<svg role="button" on:click={toggle} height="2.5rem" width="2.5rem" class:start>
-  <circle cx="1.25rem" cy="1.25rem" r="1.25rem" />
-  <rect x="0.625rem" y="0.625rem" width="1.25rem" height="1.25rem" fill="black" />
-</svg>
+{#if $appstate.cameraPermission === 'granted'}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-interactive-supports-focus -->
+  <svg role="button" on:click={toggle} height="2.5rem" width="2.5rem" class:start>
+    <circle cx="1.25rem" cy="1.25rem" r="1.25rem" />
+    <rect x="0.625rem" y="0.625rem" width="1.25rem" height="1.25rem" fill="black" />
+  </svg>
+{/if}
 
 <style>
   .start circle {

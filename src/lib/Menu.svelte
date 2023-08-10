@@ -1,7 +1,7 @@
 <script lang="ts">
   import { clickOutside } from './clickOutside'
   import { appstate } from '$lib/store'
-  import { fade, fly } from 'svelte/transition'
+  import { fade } from 'svelte/transition'
 
   let open: string = ''
 
@@ -27,7 +27,7 @@
     bottom: 3.5rem;
     padding: 1rem;
     background-color: var(--schema-blue-light);
-    height: calc(100% - 9.2rem);
+    height: calc(100% - 9rem);
   }
 
   a {
