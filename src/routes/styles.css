@@ -57,3 +57,19 @@ body.dark {
   --text-color: #ffffff;
   --bg-header: var(--schema-orange-darker);
 }
+
+@media only screen and (/* tablet */ max-width: 768px) {
+  html,
+  body,
+  #app {
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (/* mobile large */ max-width: 375px) {
+  html,
+  body,
+  #app {
+    font-size: 1rem;
+  }
+}
