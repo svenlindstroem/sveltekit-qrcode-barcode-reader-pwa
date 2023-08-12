@@ -11,7 +11,7 @@
 {#if $appstate.cameras}
   <div>Select a Camera</div>
   <select bind:value={selectedDeviceId} on:change={handleChange}>
-    <option>-- select --</option>
+    <option value={null}>-- select --</option>
     {#each $appstate.cameras as camera}
       <option value={camera.deviceId}>{camera.label}</option>
     {/each}

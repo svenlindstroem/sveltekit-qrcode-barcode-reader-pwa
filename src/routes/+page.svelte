@@ -18,7 +18,7 @@
 
   // listen to state changes
   // use a derived store to only listen to changes to isScanning
-  $: if ($isScanningDerived) {
+  $: if ($isScanningDerived && $selectedDeviceIdDerived !== null) {
     start()
   } else {
     stop()

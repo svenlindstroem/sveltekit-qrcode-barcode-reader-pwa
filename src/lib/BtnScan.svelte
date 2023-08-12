@@ -26,7 +26,7 @@
   }
 </script>
 
-{#if $appstate.cameraPermission === 'granted'}
+{#if $appstate.cameraPermission === 'granted' && $appstate.selectedDeviceId !== null}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-interactive-supports-focus -->
   <svg role="button" on:click={toggle} height="2.5rem" width="2.5rem" class:start>
