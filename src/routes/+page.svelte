@@ -11,7 +11,6 @@
   let scanResult: ScanResultType | false = false
   let errorMsg: string | unknown
   let playBeep: boolean = true
-
   let resultIsLink: boolean = false
 
   const codeReader = new ZXing.BrowserMultiFormatReader()
@@ -104,15 +103,11 @@
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={videoElement} />
       {/if}
-      <SelectCamera />
+      {#if !scanResult}
+        <SelectCamera />
+      {/if}
       {#if scanResult}
         <ScanResult {scanResult} />
-        {#if resultIsLink}
-          <pre><code><a href={scanResult.text}>{scanResult.text}</a> {scanResult.format}</code
-            ></pre>
-        {:else}
-          <pre><code>{scanResult.text} {scanResult.format}</code></pre>
-        {/if}
       {/if}
       {#if errorMsg}
         <pre><code>{errorMsg}</code></pre>

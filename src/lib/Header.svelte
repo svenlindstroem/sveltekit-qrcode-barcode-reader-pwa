@@ -10,6 +10,9 @@
     font-size: 2rem;
     overflow: hidden;
     white-space: nowrap;
+    position: absolute;
+    width: 100vw;
+    text-align: center;
   }
   @media screen and (max-width: 320px) {
     div {
