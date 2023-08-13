@@ -1,4 +1,4 @@
-<a href="/">
+<a href="/" aria-label="home">
   <svg
     viewBox="0 0 100 100"
     stroke-width="5"
