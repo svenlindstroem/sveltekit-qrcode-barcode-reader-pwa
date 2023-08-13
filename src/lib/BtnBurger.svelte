@@ -12,7 +12,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="ignore-clickoutside" class:open on:click={toggle} aria-label="menu">
+<div class="ignore-clickoutside" class:open on:click={toggle}>
   <span />
   <span />
   <span />
